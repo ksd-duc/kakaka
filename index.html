@@ -2,81 +2,55 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>For you ❤️</title>
+<title>❤️</title>
 
 <style>
 body{
   margin:0;
-  overflow:hidden;
-  background:#0b0b12;
+  height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
-  font-family:sans-serif;
-  color:white;
+  background:#070912;
+  overflow:hidden;
 }
-h1{
-  position:absolute;
-  z-index:2;
-  text-align:center;
-  font-size:42px;
-}
+
+/* trái tim */
 .heart{
-  position:absolute;
-  width:20px;
-  height:20px;
-  background:red;
+  position:relative;
+  width:200px;
+  height:200px;
+  background:#ff2d55;
   transform:rotate(45deg);
-  animation:explode 1.2s ease-out forwards;
+  animation:beat 1s infinite;
+  box-shadow:0 0 60px #ff2d55;
 }
-.heart::before,.heart::after{
+
+.heart::before,
+.heart::after{
   content:"";
   position:absolute;
-  width:20px;
-  height:20px;
-  background:red;
+  width:200px;
+  height:200px;
+  background:#ff2d55;
   border-radius:50%;
 }
-.heart::before{top:-10px;left:0;}
-.heart::after{left:-10px;top:0;}
 
-@keyframes explode{
-  to{
-    transform:translate(var(--x),var(--y)) rotate(45deg);
-    opacity:0;
-  }
+.heart::before{ top:-100px; left:0; }
+.heart::after{ left:-100px; top:0; }
+
+/* hiệu ứng tim đập */
+@keyframes beat{
+  0%{ transform:rotate(45deg) scale(1); }
+  25%{ transform:rotate(45deg) scale(1.15); }
+  40%{ transform:rotate(45deg) scale(0.95); }
+  60%{ transform:rotate(45deg) scale(1.2); }
+  100%{ transform:rotate(45deg) scale(1); }
 }
 </style>
 </head>
 
 <body>
-
-<h1>❤️ I love you ❤️</h1>
-
-<script>
-function createExplosion(x,y){
-  for(let i=0;i<40;i++){
-    let heart=document.createElement("div");
-    heart.className="heart";
-
-    let dx=(Math.random()-0.5)*400+"px";
-    let dy=(Math.random()-0.5)*400+"px";
-    heart.style.setProperty("--x",dx);
-    heart.style.setProperty("--y",dy);
-
-    heart.style.left=x+"px";
-    heart.style.top=y+"px";
-
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),1200);
-  }
-}
-
-setInterval(()=>{
-  createExplosion(window.innerWidth/2,window.innerHeight/2);
-},900);
-</script>
-
+<div class="heart"></div>
 </body>
 </html>
