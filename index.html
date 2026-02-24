@@ -7,7 +7,6 @@
 <style>
 html,body{
     margin:0;
-    padding:0;
     overflow:hidden;
     background:#000;
 }
@@ -27,48 +26,50 @@ const canvas=document.getElementById("pinkboard");
 const ctx=canvas.getContext("2d");
 
 function resize(){
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
+    canvas.width=innerWidth;
+    canvas.height=innerHeight;
 }
-window.onresize=resize;
 resize();
+window.onresize=resize;
 
 let particles=[];
 
-function createHeartParticle(x,y,angle,speed){
-    particles.push({
-        x,y,
-        vx:Math.cos(angle)*speed,
-        vy:Math.sin(angle)*speed,
-        life:1
-    });
-}
-
-function firework(x,y){
-    for(let i=0;i<200;i++){
-        let a=Math.random()*Math.PI*2;
-        let s=Math.random()*200+50;
-        createHeartParticle(x,y,a,s);
+// phương trình trái tim
+function heart(t){
+    return {
+        x:16*Math.pow(Math.sin(t),3),
+        y:13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)
     }
 }
 
-function drawHeart(x,y,size){
-    ctx.beginPath();
-    ctx.moveTo(x,y);
-    ctx.arc(x-size,y-size,size,0,Math.PI,true);
-    ctx.arc(x+size,y-size,size,0,Math.PI,true);
-    ctx.lineTo(x,y+size*2);
-    ctx.fill();
+// tạo pháo hoa tim
+function firework(x,y){
+    let hue=Math.random()*360;
+
+    for(let i=0;i<180;i++){
+        let t=Math.random()*Math.PI*2;
+        let p=heart(t);
+
+        let speed=Math.random()*4+2;
+
+        particles.push({
+            x,y,
+            vx:p.x*speed,
+            vy:-p.y*speed,
+            life:1,
+            hue
+        });
+    }
 }
 
 function update(dt){
     for(let i=particles.length-1;i>=0;i--){
         let p=particles[i];
 
-        p.vy+=80*dt; // gravity
-        p.x+=p.vx*dt;
-        p.y+=p.vy*dt;
-        p.life-=dt*0.6;
+        p.vy+=60*dt; // gravity
+        p.x+=p.vx;
+        p.y+=p.vy;
+        p.life-=dt*0.5;
 
         if(p.life<=0) particles.splice(i,1);
     }
@@ -78,13 +79,19 @@ function draw(){
     ctx.fillStyle="rgba(0,0,0,0.25)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    ctx.fillStyle="#ff4a88";
-
     particles.forEach(p=>{
         ctx.globalAlpha=p.life;
-        drawHeart(p.x,p.y,4);
+
+        ctx.fillStyle=`hsl(${p.hue},100%,60%)`;
+        ctx.shadowColor=`hsl(${p.hue},100%,60%)`;
+        ctx.shadowBlur=15;
+
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,2,0,Math.PI*2);
+        ctx.fill();
     });
 
+    ctx.shadowBlur=0;
     ctx.globalAlpha=1;
 }
 
@@ -93,7 +100,7 @@ function loop(t){
     let dt=(t-last)/1000;
     last=t;
 
-    if(Math.random()<0.04){
+    if(Math.random()<0.03){
         firework(
             Math.random()*canvas.width,
             Math.random()*canvas.height*0.6
